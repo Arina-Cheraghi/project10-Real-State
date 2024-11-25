@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Baloo Bhaijaan 2", sans-serif;
+}
+
+@import url('https://unpkg.com/leaflet/dist/leaflet.css');

@@ -1,0 +1,17 @@
+.slide-left {
+  opacity: 0;
+  transform: translateX(1000px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.slide-right {
+  opacity: 0;
+  transform: translateX(-1000px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.slide-left.visible,
+.slide-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}

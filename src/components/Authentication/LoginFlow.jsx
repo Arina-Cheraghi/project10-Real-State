@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import Dark from "../../assets/1-dark.webp";
 import Light from "../../assets/1-light.webp";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function LoginFlow({ isDarkMode }) {
   const [step, setStep] = useState("login");
@@ -10,16 +12,53 @@ function LoginFlow({ isDarkMode }) {
   const [verificationCode, setVerificationCode] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (step === "login" || step === "signup") {
-      setStep("verify");
-    } else {
-      navigate("/");
+    try {
+      if (step === "login") {
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/auth/login/",
+          { phone_number: phoneNumber }
+        );
+        if (response.data.success) {
+          setStep("verify");
+        } else {
+          setStep("signup");
+        }
+      } else if (step === "signup") {
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/auth/register/",
+          {
+            phone_number: phoneNumber,
+            first_name: firstName,
+            verification_code: verificationCode,
+          }
+        );
+        if (response.data.success) {
+          toast.success("ثبت‌نام موفقیت‌آمیز بود!");
+          // navigate('/');
+        } else {
+          toast.error("خطا در ثبت‌نام، لطفاً دوباره تلاش کنید.");
+        }
+      }
+    } catch (error) {
+      console.error("Error during API call:", error);
+      toast.error("خطا در ارتباط با سرور، لطفاً دوباره تلاش کنید.");
     }
   };
+
+  // const checkServer = async () => {
+  //   try {
+  //     const response = await axios.get('http://127.0.0.1:8000/api/auth/login/');
+  //     console.log('Server is up:', response.data);
+  //   } catch (error) {
+  //     console.error('Error connecting to server:', error.message); // نمایش پیام خطا
+  //     console.error('Error details:', error); // نمایش جزئیات خطا
+  //   }
+  // };
+  // checkServer()
 
   const renderForm = () => {
     switch (step) {
@@ -47,14 +86,6 @@ function LoginFlow({ isDarkMode }) {
             >
               ورود
             </button>
-            <p className="mt-4 text-center">
-              <span
-                className="cursor-pointer text-green-700 transition-all hover:text-green-500"
-                onClick={() => setStep("signup")}
-              >
-                آیا ثبت نام نکرده‌اید؟
-              </span>
-            </p>
           </>
         );
       case "signup":
@@ -73,21 +104,10 @@ function LoginFlow({ isDarkMode }) {
             />
             <input
               type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="نام خانوادگی"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              placeholder="کد تایید"
               className={`w-full p-2 mb-4 rounded ${
-                isDarkMode
-                  ? "bg-[#002400] text-[#F3F3E0]"
-                  : "bg-[#F3F3E0] text-[#002400]"
-              }`}
-            />
-            <input
-              type="tel"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="شماره تلفن"
-              className={`text-right w-full p-2 mb-4 rounded ${
                 isDarkMode
                   ? "bg-[#002400] text-[#F3F3E0]"
                   : "bg-[#F3F3E0] text-[#002400]"
@@ -103,14 +123,6 @@ function LoginFlow({ isDarkMode }) {
             >
               ثبت نام
             </button>
-            <p className="mt-4 text-center">
-              <span
-                className="cursor-pointer text-green-700 transition-all hover:text-green-500"
-                onClick={() => setStep("login")}
-              >
-                قبلاً ثبت نام کرده‌اید؟
-              </span>
-            </p>
           </>
         );
       case "verify":
@@ -156,7 +168,11 @@ function LoginFlow({ isDarkMode }) {
         <Link to="/">
           <picture>
             <source media="(prefers-color-scheme: dark)" />
-            <img className="w-1/2 mx-auto" src={isDarkMode ? Light : Dark} alt="Logo" />
+            <img
+              className="w-1/2 mx-auto"
+              src={isDarkMode ? Light : Dark}
+              alt="Logo"
+            />
           </picture>
           <h2 className="text-2xl font-bold mb-6 text-center">
             {step === "login"
@@ -166,9 +182,7 @@ function LoginFlow({ isDarkMode }) {
               : "تایید کد"}
           </h2>
         </Link>
-        <form onSubmit={handleSubmit}>
-          {renderForm()}
-        </form>
+        <form onSubmit={handleSubmit}>{renderForm()}</form>
       </div>
     </div>
   );

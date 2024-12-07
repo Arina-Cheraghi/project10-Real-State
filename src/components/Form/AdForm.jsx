@@ -1,11 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AdImages from "./AdImages";
 import Features from "./Features";
 import MapComponent from "./MapComponent";
 
-export default function AdForm({ isDarkMode }) {
+export default function AdForm({ isDarkMode, categories }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [images, setImages] = useState([]);
+
+  const [features, setFeatures] = useState([]);
+
+  useEffect(() => {
+    const fetchFeatures = async () => {
+      try {
+        const response = await fetch("http://192.168.10.213:8000/api/feature/");
+        const data = await response.json();
+        setFeatures(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching features:", error);
+      }
+    };
+
+    fetchFeatures();
+  }, []);
 
   return (
     <div
@@ -27,24 +44,21 @@ export default function AdForm({ isDarkMode }) {
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">انتخاب کنید</option>
-            <option value="فروش اداری">فروش اداری</option>
-            <option value="رهن و اجاره اداری">رهن و اجاره اداری</option>
-            <option value="فروش مسکونی">فروش مسکونی</option>
-            <option value="رهن و اجاره مسکونی">رهن و اجاره مسکونی</option>
-            <option value="فروش باغ و ویلا">فروش باغ و ویلا</option>
-            <option value="رهن و اجاره باغ و ویلا">
-              رهن و اجاره باغ و ویلا
-            </option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.name}>
+                {category.name}
+              </option>
+            ))}
           </select>
         </div>
         <MapComponent isDarkMode={isDarkMode} />
 
         <AdImages images={images} setImages={setImages} />
 
-        <Features isDarkMode={isDarkMode} />
+        <Features isDarkMode={isDarkMode} features={features} />
 
         <div className="text-center">
-          <button className="w-1/3 mx-auto bg-[#273B09] text-white hover:bg-[#58641D] py-2 rounded-md">
+          <button className="w-1/3 mx-auto bg-[#273B09] text-white hover:bg-[#002400] py-2 rounded-md">
             ثبت آگهی
           </button>
         </div>

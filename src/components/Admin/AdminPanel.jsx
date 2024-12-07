@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
 import {
@@ -8,17 +10,19 @@ import {
   Bookmark,
   ScrollText,
   UserIcon,
+  Paperclip,
 } from "lucide-react";
 
-export default function AdminPanel({ isDarkMode }) {
+export default function AdminPanel({ isDarkMode, categories, onUpdate }) {
   const navItems = [
     { to: "dashboard", label: "داشبورد", icon: Home },
     { to: "profile", label: "پروفایل", icon: UserIcon },
+    { to: "categoryList", label: "دسته بندی ها", icon: Paperclip },
     { to: "users", label: "مدیریت کاربران", icon: Users },
     { to: "properties", label: "مدیریت املاک", icon: Building },
     { to: "favorites", label: "نشان شده‌ها", icon: Bookmark },
     { to: "ads", label: "آگهی‌ها", icon: ScrollText },
-    { to: "settings", label: "تنظیمات سایت" , icon: Settings },
+    { to: "settings", label: "تنظیمات سایت", icon: Settings },
   ];
 
   return (
@@ -57,8 +61,9 @@ export default function AdminPanel({ isDarkMode }) {
           isDarkMode ? "bg-[#28361875]" : "bg-[#ffe9cb ]"
         }`}
       >
-        <Outlet isDarkMode={isDarkMode} />
+        <Outlet context={{ categories, isDarkMode, onUpdate }} />
       </main>
     </div>
   );
 }
+

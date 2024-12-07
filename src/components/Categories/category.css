@@ -1,0 +1,22 @@
+#app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper {
+  width: 240px;
+  height: 320px;
+}
+
+.swiper-slide:nth-child(1n) {
+  background-color: #678157;
+}
+
+.swiper-slide:nth-child(2n) {
+  background-color: #606c38;
+}
+.swiper-slide:nth-child(3n) {
+  background-color: #a7c957;
+}
+

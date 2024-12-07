@@ -1,18 +1,44 @@
 import React from "react";
-import { GrInstagram} from "react-icons/gr";
+import { GrInstagram } from "react-icons/gr";
 import { IoLogoTwitter } from "react-icons/io";
 import { FaFacebook } from "react-icons/fa";
-
 
 function Footer({ isDarkMode }) {
   return (
     <footer
       className={`${
-        isDarkMode ? "bg-[#142400] text-white" : "bg-[#7B904B] text-black"
+        isDarkMode ? "z-10 bg-[#142400] text-white" : "bg-[#7B904B] text-black"
       } py-8 transition-all`}
     >
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <hr className="w-full" />
+
+      <div className=" w-full mx-auto ">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-10 w-5/6 mx-auto">
+          <div className="about">
+            <h3 className="text-xl font-bold mb-4 border-b pb-2 border-opacity-20 border-current">
+              درباره ما
+            </h3>
+            <p className="mb-2">
+              ما یک تیم متعهد هستیم که به ارائه بهترین خدمات و محصولات به
+              مشتریان خود می‌پردازیم. هدف ما ایجاد تجربه‌ای منحصر به فرد و
+              رضایت‌بخش برای شماست.
+            </p>
+          </div>
+
+          {/* بخش تیم ما */}
+          <div className="team">
+            <h3 className="text-xl font-bold mb-4 border-b pb-2 border-opacity-20 border-current">
+              تیم ما
+            </h3>
+            <p className="mb-2">
+              تیم ما متشکل از متخصصان با تجربه در زمینه‌های مختلف است. ما به
+              همکاری و نوآوری اعتقاد داریم و همواره در تلاش برای بهبود خدمات خود
+              هستیم.
+            </p>
+          </div>
+        </div>
+        <hr className="w-full" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 my-10 w-5/6 mx-auto">
           <div className="contact-info">
             <h3 className="text-xl font-bold mb-4 border-b pb-2 border-opacity-20 border-current">
               تماس با ما

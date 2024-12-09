@@ -64,7 +64,6 @@ const CategoryList = () => {
       setInputValue("");
       toast.success("دسته‌بندی با موفقیت به‌روزرسانی شد");
       
-      // Re-fetch categories after successful update
       await fetchCategories();
     } catch (error) {
       console.error("Error updating category:", error);
@@ -73,26 +72,34 @@ const CategoryList = () => {
   }, [inputValue, fetchCategories]);
 
   const handleDelete = useCallback(async (categoryId) => {
-    try {
-      const response = await fetch(
-        `http://192.168.10.213:8000/api/category/${categoryId}/`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+    const deleteCategoryAndChildren = async (id) => {
+      const children = categories.filter(c => c.parent_id === id);
+      for (const child of children) {
+        await deleteCategoryAndChildren(child.category_id);
       }
 
-      toast.success("دسته‌بندی با موفقیت حذف شد");
-      // Re-fetch categories after successful deletion
-      await fetchCategories();
-    } catch (error) {
-      console.error("Error deleting category:", error);
-      toast.error(`خطا در حذف دسته‌بندی: ${error.message}`);
-    }
-  }, [fetchCategories]);
+      try {
+        const response = await fetch(
+          `http://192.168.10.213:8000/api/category/${id}/`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        toast.success("دسته‌بندی با موفقیت حذف شد");
+        await fetchCategories();
+      } catch (error) {
+        console.error("Error deleting category:", error);
+        toast.error(`خطا در حذف دسته‌بندی: ${error.message}`);
+      }
+    };
+
+    await deleteCategoryAndChildren(categoryId);
+  }, [fetchCategories, categories]);
 
   const handleAddNew = useCallback((parentId = null) => {
     setNewCategories((prev) => ({
@@ -123,7 +130,7 @@ const CategoryList = () => {
         },
         body: JSON.stringify({
           title: newCategory.title,
-          parent_id: parentId,
+          parent_id: parentId || null,
         }),
       });
 
@@ -140,7 +147,6 @@ const CategoryList = () => {
       });
       toast.success("دسته‌بندی با موفقیت اضافه شد");
       
-      // Re-fetch categories after successful addition
       await fetchCategories();
     } catch (error) {
       console.error("Error adding category:", error);
@@ -149,8 +155,8 @@ const CategoryList = () => {
   }, [newCategories, fetchCategories]);
 
   const renderCategory = (category, depth = 0) => {
-    const hasChildren = categories.some(
-      (c) => c.parent_id === category.category_id.toString()
+    const children = categories.filter(
+      (c) => c.parent_id === category.category_id
     );
     const isExpanded = expandedCategories.includes(category.category_id);
     const isEditing = editingCategory === category.category_id;
@@ -159,7 +165,7 @@ const CategoryList = () => {
     return (
       <div key={category.category_id} className="mb-2">
         <div className={`flex items-center p-2 rounded-md transition-colors duration-200 ${isDarkMode ? 'hover:bg-[#002400]' : 'hover:bg-[#7B904B]'}`}>
-          {hasChildren && (
+          {children.length > 0 && (
             <button
               className="w-6 h-6 mr-2 text-[#273B09] focus:outline-none transition-transform duration-200"
               onClick={() => toggleCategory(category.category_id)}
@@ -167,19 +173,13 @@ const CategoryList = () => {
               {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
             </button>
           )}
-          {!hasChildren && <div className="w-6 mr-2" />}
-          <div
-            className="flex items-center flex-1"
-            style={{ marginRight: `${depth * 20}px` }}
-          >
+          <div className="flex items-center flex-1" style={{ marginRight: `${depth * 20}px` }}>
             {isEditing ? (
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                className={`border p-2 flex-1 rounded-md ${
-                  isDarkMode ? "bg-[#273B09] text-white" : "bg-white text-[#002400]"
-                }`}
+                className={`border p-2 flex-1 rounded-md ${isDarkMode ? "bg-[#273B09] text-white" : "bg-white text-[#002400]"}`}
                 onBlur={() => handleSave(category)}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
@@ -210,74 +210,61 @@ const CategoryList = () => {
             </div>
           </div>
         </div>
+        {isExpanded && children.length > 0 && (
+          <div className="mr-6">
+            {children.map((childCategory) => renderCategory(childCategory, depth + 1))}
+          </div>
+        )}
         {isAddingNew && (
-          <div
-            className="flex items-center mt-2 ml-8"
-            style={{ marginLeft: `${(depth + 1) * 20 + 32}px` }}
-          >
+          <div className="flex items-center mt-2">
             <input
               type="text"
               value={newCategories[category.category_id].title}
-              onChange={(e) =>
-                handleNewCategoryChange(category.category_id, e.target.value)
-              }
-              className={`border p-2 flex-1 rounded-md ${
-                isDarkMode ? "bg-[#002400] " : "bg-white "
-              }`}
-              placeholder="نام دسته‌بندی جدید"
+              onChange={(e) => handleNewCategoryChange(category.category_id, e.target.value)}
+              className={`border p-2 flex-1 rounded-md ${isDarkMode ? "bg-[#273B09] text-white" : "bg-white text-[#002400]"}`}
+              placeholder="نام زیر دسته جدید"
             />
-            <button
-              onClick={() => handleSaveNew(category.category_id)}
+            <button 
+              onClick={() => handleSaveNew(category.category_id)} 
               className="p-2 ml-2 text-[#58641D] hover:text-[#273B09] transition-colors duration-200"
             >
               <Save size={20} />
             </button>
             <button
-              onClick={() =>
+              onClick={() => {
                 setNewCategories((prev) => {
                   const updated = { ...prev };
                   delete updated[category.category_id];
                   return updated;
-                })
-              }
+                });
+              }}
               className="p-2 ml-2 text-red-500 hover:text-red-600 transition-colors duration-200"
             >
               <X size={20} />
             </button>
           </div>
         )}
-        {isExpanded && (
-          <div className="mr-6">
-            {categories
-              .filter((c) => c.parent_id === category.category_id.toString())
-              .map((childCategory) => renderCategory(childCategory, depth + 1))}
-          </div>
-        )}
       </div>
     );
   };
 
-  const rootCategories = categories.filter(
-    (category) => category.parent_id === null
-  );
-
   return (
-    <div className={`p-6 `}>
+    <div className={`p-6`}>
       <h2 className="text-3xl font-bold mb-6">مدیریت دسته‌بندی‌ها</h2>
       <p className="mb-6 text-lg">
         در اینجا می‌توانید دسته‌بندی‌ها را مشاهده و مدیریت کنید.
       </p>
       <div className={`flex flex-col bg-opacity-50 rounded-lg p-4 ${isDarkMode ? 'bg-[#002400]' : 'bg-[#7B904B]'}`}>
-        {rootCategories.map((category) => renderCategory(category))}
+        {categories
+          .filter((category) => category.parent_id === null)
+          .map((category) => renderCategory(category))}
         {newCategories["root"] && (
           <div className="flex items-center mt-4">
             <input
               type="text"
               value={newCategories["root"].title}
               onChange={(e) => handleNewCategoryChange("root", e.target.value)}
-              className={`border p-2 flex-1 rounded-md ${
-                isDarkMode ? "bg-[#273B09] text-white" : "bg-white text-[#002400]"
-              }`}
+              className={`border p-2 flex-1 rounded-md ${isDarkMode ? "bg-[#273B09] text-white" : "bg-white text-[#002400]"}`}
               placeholder="نام دسته‌بندی اصلی جدید"
             />
             <button 
@@ -312,4 +299,3 @@ const CategoryList = () => {
 };
 
 export default CategoryList;
-

@@ -1,3 +1,7 @@
+
+
+
+
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LightLogo from "../../assets/1-light.webp";
@@ -13,9 +17,9 @@ function Header({ isDarkMode, categories = [], updateFlag }) {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
-  const handleCategoryClick = (categoryId) => {
+  const handleCategoryMouseEnter = (categoryId) => {
     const filteredSubCategories = categories.filter(
-      (category) => category.parent_id === String(categoryId)
+      (category) => category.parent_id === categoryId
     );
 
     setSubCategories(filteredSubCategories);
@@ -24,9 +28,9 @@ function Header({ isDarkMode, categories = [], updateFlag }) {
     setSubSubCategories([]);
   };
 
-  const handleSubCategoryClick = (subCategoryId) => {
+  const handleSubCategoryMouseEnter = (subCategoryId) => {
     const filteredSubSubCategories = categories.filter(
-      (category) => category.parent_id === String(subCategoryId)
+      (category) => category.parent_id === subCategoryId
     );
 
     setSubSubCategories(filteredSubSubCategories);
@@ -49,15 +53,8 @@ function Header({ isDarkMode, categories = [], updateFlag }) {
     };
   }, []);
 
-  useEffect(() => {
-    // این اثر هر بار که updateFlag تغییر کند اجرا می‌شود
-    // می‌توانید هر منطق اضافی که نیاز دارید را اینجا اضافه کنید
-  }, [updateFlag]);
-
   return (
-    <header
-      className={`transition-all z-10 ${isDarkMode ? "bg-[#002400] text-white" : "bg-[#7B904B] text-black"}`}
-    >
+    <header className={`transition-all z-10 ${isDarkMode ? "bg-[#002400] text-white" : "bg-[#7B904B] text-black"}`}>
       <div className="w-full md:w-11/12 sm:w-11/12 flex items-center justify-between py-1 px-4">
         <div className="w-1/6 flex ">
           <Link to="/" className="w-full sm:w-1/2">
@@ -68,57 +65,56 @@ function Header({ isDarkMode, categories = [], updateFlag }) {
           </Link>
         </div>
 
-        <nav
-          className="w-1/5 justify-between flex relative transition-all"
-          ref={dropdownRef}
-        >
-          {categories
-            .filter((category) => category.parent_id === null)
-            .map((category) => (
+        <nav className="w-1/5 justify-between flex relative" ref={dropdownRef}>
+  {categories
+    .filter((category) => category.parent_id === null)
+    .map((category) => (
+      <div
+        key={category.category_id}
+        className="relative transition-all"
+        onMouseEnter={() => handleCategoryMouseEnter(category.category_id)}
+      >
+        <a href="#" className="hover:scale-110 transition-all m-0 flex items-center">
+          <img src={category.image} alt={category.title} className="w-6 h-6 mr-2" />
+          {category.title}
+        </a>
+        {activeCategoryId === category.category_id && subCategories.length > 0 && (
+          <div className="absolute z-10 bg-[#e0c19d] w-32 m-2 rounded-lg">
+            {subCategories.map((subCategory) => (
               <div
-                key={category.category_id}
-                className="relative transition-all"
-                onMouseEnter={() => handleCategoryClick(category.category_id)}
+                key={subCategory.category_id}
+                onMouseEnter={() => handleSubCategoryMouseEnter(subCategory.category_id)}
+                className="relative"
               >
-                <a href="#" className="hover:scale-110 transition-all m-0">
-                  {category.title}
+                <a
+                  href="#"
+                  className="flex transition-all flex-col rounded-lg p-2 hover:bg-[#606C38]"
+                >
+                  <img src={subCategory.image} alt={subCategory.title} className="w-4 h-4 mr-2" />
+                  {subCategory.title}
                 </a>
-                {activeCategoryId === category.category_id &&
-                  subCategories.length > 0 && (
-                    <div className="absolute z-10 bg-[#e0c19d] w-32 m-2 rounded-lg">
-                      {subCategories.map((subCategory) => (
-                        <div
-                          key={subCategory.category_id}
-                          onMouseEnter={() => handleSubCategoryClick(subCategory.category_id)}
-                          className="relative"
-                        >
-                          <a
-                            href="#"
-                            className="flex transition-all flex-col rounded-lg p-2 hover:bg-[#606C38]"
-                          >
-                            {subCategory.title}
-                          </a>
-                          {activeSubCategoryId === subCategory.category_id &&
-                            subSubCategories.length > 0 && (
-                              <div className="absolute right-full top-0 z-20 m-1 bg-[#e0c19d] w-40 rounded-lg">
-                                {subSubCategories.map((subSubCategory) => (
-                                  <a
-                                    href="#"
-                                    key={subSubCategory.category_id}
-                                    className="flex transition-all flex-col rounded-lg p-2 hover:bg-[#606C38]"
-                                  >
-                                    {subSubCategory.title}
-                                  </a>
-                                ))}
-                              </div>
-                            )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                {activeSubCategoryId === subCategory.category_id && subSubCategories.length > 0 && (
+                  <div className="absolute right-full top-0 z-20 m-1 bg-[#e0c19d] w-40 rounded-lg">
+                    {subSubCategories.map((subSubCategory) => (
+                      <a
+                        href="#"
+                        key={subSubCategory.category_id}
+                        className="flex transition-all flex-col rounded-lg p-2 hover:bg-[#606C38]"
+                      >
+                        <img src={subSubCategory.image} alt={subSubCategory.title} className="w-4 h-4 mr-2" />
+                        {subSubCategory.title}
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
-        </nav>
+          </div>
+        )}
+      </div>
+    ))}
+</nav>
+
 
         <div className="sm:w-1/5 w-2/4 relative">
           <div
@@ -168,4 +164,3 @@ function Header({ isDarkMode, categories = [], updateFlag }) {
 }
 
 export default Header;
-

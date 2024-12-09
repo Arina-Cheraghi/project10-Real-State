@@ -21,6 +21,7 @@ import Favorites from "./components/Admin/Favorites";
 import Ads from "./components/Admin/Ads";
 import Profile from "./components/Admin/Profile";
 import CategoryList from "./components/Admin/CategoryList";
+import File from './components/Admin/File';
 
 function AppContent({ isDarkMode, toggleDarkMode, categories, updateFlag, onUpdate }) {
   const location = useLocation();
@@ -46,6 +47,7 @@ function AppContent({ isDarkMode, toggleDarkMode, categories, updateFlag, onUpda
         <Route path="/admin" element={<AdminPanel categories={categories} isDarkMode={isDarkMode} onUpdate={onUpdate} />}>
           <Route path="dashboard" element={<Dashboard isDarkMode={isDarkMode} />} />
           <Route path="users" element={<Users isDarkMode={isDarkMode} />} />
+          <Route path="file" element={<File isDarkMode={isDarkMode} />} />
           <Route path="categoryList" element={<CategoryList isDarkMode={isDarkMode} onUpdate={onUpdate} />} />
           <Route path="properties" element={<Properties isDarkMode={isDarkMode} />} />
           <Route path="settings" element={<Settings isDarkMode={isDarkMode} />} />
@@ -86,7 +88,7 @@ function App() {
       }
       const data = await response.json();
       setCategories(data);
-      console.log(data)
+      // console.log(data)
     } catch (error) {
       console.error("There was a problem fetching the categories:", error);
     }

@@ -11,6 +11,7 @@ import {
   ScrollText,
   UserIcon,
   Paperclip,
+  File
 } from "lucide-react";
 
 export default function AdminPanel({ isDarkMode, categories, onUpdate }) {
@@ -18,6 +19,7 @@ export default function AdminPanel({ isDarkMode, categories, onUpdate }) {
     { to: "dashboard", label: "داشبورد", icon: Home },
     { to: "profile", label: "پروفایل", icon: UserIcon },
     { to: "categoryList", label: "دسته بندی ها", icon: Paperclip },
+    { to: "file", label: "مدیریت فایل ", icon: File },
     { to: "users", label: "مدیریت کاربران", icon: Users },
     { to: "properties", label: "مدیریت املاک", icon: Building },
     { to: "favorites", label: "نشان شده‌ها", icon: Bookmark },

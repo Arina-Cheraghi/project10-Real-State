@@ -54,7 +54,7 @@ function Header({ isDarkMode, categories = [], updateFlag }) {
   }, []);
 
   return (
-    <header className={`transition-all z-10 ${isDarkMode ? "bg-[#002400] text-white" : "bg-[#7B904B] text-black"}`}>
+    <header className={`transition-all fixed w-full z-10 ${isDarkMode ? "bg-[#002400] text-white" : "bg-[#7B904B] text-black"}`}>
       <div className="w-full md:w-11/12 sm:w-11/12 flex items-center justify-between py-1 px-4">
         <div className="w-1/6 flex ">
           <Link to="/" className="w-full sm:w-1/2">

@@ -8,7 +8,7 @@ function Footer({ isDarkMode }) {
     <footer
       className={`${
         isDarkMode ? "z-10 bg-[#142400] text-white" : "bg-[#7B904B] text-black"
-      } py-8 transition-all`}
+      } py-8 transition-all sticky`}
     >
       <hr className="w-full" />
 

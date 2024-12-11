@@ -30,7 +30,7 @@ function AppContent({ isDarkMode, toggleDarkMode, categories, updateFlag, onUpda
     <div className={isDarkMode ? "bg-[#283618] text-[#FEFAE0]" : "bg-white text-black"}>
       <button
         onClick={toggleDarkMode}
-        className="fixed top-5 left-4 px-4 py-2 rounded bg-[#41414194] z-10"
+        className="fixed z-20 top-5 left-4 px-4 py-2 rounded bg-[#41414194]"
       >
         {isDarkMode ? (
           <GiUbisoftSun className="active:outline-none text-yellow-500 text-2xl" />

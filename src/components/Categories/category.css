@@ -20,3 +20,23 @@
   background-color: #a7c957;
 }
 
+.swiper-button-next{
+  color: #333D29;
+  transition: all .3s;
+}
+.swiper-button-prev{
+  color: #333D29;
+  transition: all .3s;
+}
+.swiper-button-next:hover{
+  transform: scale(1.05);
+  font-weight: bold;
+}
+.swiper-button-next:hover{
+  transform: scale(1.05);
+  font-weight: bold;
+}
+.swiper-button-prev:hover{
+  transform: scale(1.05);
+  font-weight: bold;
+}

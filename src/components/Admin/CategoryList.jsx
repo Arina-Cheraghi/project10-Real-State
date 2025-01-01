@@ -13,7 +13,7 @@ const CategoryList = () => {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const response = await fetch("http://192.168.10.213:8000/api/category/");
+      const response = await fetch("http://192.168.10.224:8000/api/category/");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -46,7 +46,7 @@ const CategoryList = () => {
     if (!inputValue.trim()) return;
     try {
       const response = await fetch(
-        `http://192.168.10.213:8000/api/category/${category.category_id}/`,
+        `http://192.168.10.224:8000/api/category/${category.category_id}/`,
         {
           method: "PUT",
           headers: {
@@ -80,7 +80,7 @@ const CategoryList = () => {
 
       try {
         const response = await fetch(
-          `http://192.168.10.213:8000/api/category/${id}/`,
+          `http://192.168.10.224:8000/api/category/${id}/`,
           {
             method: "DELETE",
           }
@@ -123,7 +123,7 @@ const CategoryList = () => {
     }
 
     try {
-      const response = await fetch("http://192.168.10.213:8000/api/category/", {
+      const response = await fetch("http://192.168.10.224:8000/api/category/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -17,9 +17,10 @@ function File({ isDarkMode }) {
     const fetchFeatures = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://192.168.10.213:8000/api/feature/");
+        const response = await fetch("http://192.168.10.224:8000/api/feature/");
         const data = await response.json();
         setFeatures(data);
+        console.log(data)
       } catch (error) {
         setErrorMessage("خطا در بارگذاری ویژگی‌ها");
       } finally {
@@ -36,7 +37,7 @@ function File({ isDarkMode }) {
     try {
       if (newFeature.type === "dynamic") {
         for (const value of newFeature.values) {
-          const response = await fetch("http://192.168.10.213:8000/api/feature/", {
+          const response = await fetch("http://192.168.10.224:8000/api/feature/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -58,7 +59,7 @@ function File({ isDarkMode }) {
           setFeatures((prevFeatures) => [...prevFeatures, data]);
         }
       } else {
-        const response = await fetch("http://192.168.10.213:8000/api/feature/", {
+        const response = await fetch("http://192.168.10.224:8000/api/feature/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -90,7 +91,7 @@ function File({ isDarkMode }) {
   
   const handleDeleteFeature = async (featureId) => {
     try {
-      await fetch(`http://192.168.10.213:8000/api/feature/${featureId}/`, {
+      await fetch(`http://192.168.10.224:8000/api/feature/${featureId}/`, {
         method: "DELETE",
       });
       setFeatures(features.filter((feature) => feature.feature_id !== featureId));
@@ -117,7 +118,7 @@ function File({ isDarkMode }) {
   };
 
   return (
-    <div className={`${isDarkMode ? "bg-[#4f5b33] text-[#FEFAE0]" : "bg-[#FEFAE0] text-[#002400]"} p-8 rounded-lg w-2/3 h-fit mt-10 shadow-lg`}>
+    <div className={`${isDarkMode ? "bg-[#4f5b33] text-[#FEFAE0]" : "bg-[#FEFAE0] text-[#002400]"} p-8 rounded-lg w-full h-fit mt-10 shadow-lg`}>
       <h2 className="text-4xl font-bold mb-6 text-center">مدیریت فایل ها</h2>
       {loading && <p className="text-center mb-4">در حال بارگذاری...</p>}
       {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}

@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function Features({ isDarkMode, features }) {
+function Features({ isDarkMode, features, onFeaturesChange }) {
   const [selectedValues, setSelectedValues] = useState({});
 
   const handleChange = (featureId, value) => {
-    setSelectedValues((prev) => ({
-      ...prev,
-      [featureId]: value,
-    }));
-    console.log(`Feature ID: ${featureId}, Value: ${value}`);
+    setSelectedValues((prev) => {
+      const newValues = {
+        ...prev,
+        [featureId]: value,
+      };
+      onFeaturesChange(newValues);
+      return newValues;
+    });
   };
 
   const uniqueFeatures = [
@@ -26,10 +29,17 @@ function Features({ isDarkMode, features }) {
       title: "پارکینگ",
       yes: features.find(feature => feature.title === "پارکینگ" && feature.value === "yes"),
       no: features.find(feature => feature.title === "پارکینگ" && feature.value === "no"),
+    },{
+      title: "قیمت",
+      feature: features.find(feature => feature.title === "قیمت"),
     },
   ];
 
   return (
+    <>
+    <div>
+      
+    </div>
     <div
       className={`space-y-4 flex flex-col w-full mx-auto p-6 rounded-lg shadow-md ${
         isDarkMode ? "bg-[#273B09] text-white" : "bg-white text-black"
@@ -66,10 +76,23 @@ function Features({ isDarkMode, features }) {
               </label>
             </div>
           </div>
+        ) : feature.feature ? (
+          <div key={feature.feature.feature_id} className="space-y-2 border-b pb-4">
+            <h6 className="text-lg font-semibold">{feature.title}</h6>
+            <input
+              type="number"
+              value={selectedValues[feature.feature.feature_id] || ""}
+              onChange={(e) => handleChange(feature.feature.feature_id, e.target.value)}
+              placeholder="قیمت را وارد کنید"
+              className="w-full p-2 rounded-md text-black"
+            />
+          </div>
         ) : null
       ))}
     </div>
+    </>
   );
 }
 
 export default Features;
+

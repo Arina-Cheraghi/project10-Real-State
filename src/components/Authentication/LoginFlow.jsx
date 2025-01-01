@@ -1,127 +1,109 @@
 import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-import Dark from "../../assets/1-dark.webp";
-import Light from "../../assets/1-light.webp";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Dark from "../../assets/1-dark.webp";
+import Light from "../../assets/1-light.webp";
 
 function LoginFlow({ isDarkMode }) {
-  const [step, setStep] = useState("login");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [step, setStep] = useState("phone");
+  const [phone, setPhone] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  // const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [signupPhone, setSignupPhone] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (step === "login") {
+      if (step === "phone") {
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/auth/login/",
-          { phone_number: phoneNumber }
+          "http://192.168.10.224:8000/api/auth/verify/",
+          { phone }
         );
-        if (response.data.success) {
+        console.log("Phone verification response:", response);
+        if (response.data === 1111 || 1234) {
           setStep("verify");
         } else {
+          toast.error("خطا در ارسال کد تایید. لطفاً دوباره تلاش کنید.");
+          console.error("Error sending verification code:", response.data);
+        }
+      } else if (step === "verify") {
+        const response = await axios.post(
+          "http://192.168.10.224:8000/api/auth/check/",
+          {
+            phone,
+            code: verificationCode,
+          }
+        );
+        console.log("Verification response:", response);
+        if (response.data.message === "User logged in") {
+          toast.success("خوش آمدید!");
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("isLoggedIn", "true");
+          localStorage.setItem("userName", response.data.name);  // Store the user's name
+          navigate('/');
+        } else {
+          toast.error("کاربر جدید است. به صفحه ثبت‌نام هدایت می‌شوید.");
           setStep("signup");
+          console.error("Invalid verification code:", response.data);
         }
       } else if (step === "signup") {
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/auth/register/",
+          "http://192.168.10.224:8000/api/auth/register/",
           {
-            phone_number: phoneNumber,
-            first_name: firstName,
+            phone: signupPhone,
+            name,
             verification_code: verificationCode,
           }
         );
-        if (response.data.success) {
-          toast.success("ثبت‌نام موفقیت‌آمیز بود!");
-          // navigate('/');
+        console.log("Signup response:", response);
+
+        // بررسی موفقیت ثبت‌نام
+        if (response.data && response.data.token) {
+          toast.success("با موفقیت ثبت نام شدید! لطفاً وارد اکانت خود شوید.");
+          localStorage.setItem("token", response.data.token); // ذخیره توکن
+          localStorage.setItem("isLoggedIn", "true"); // وضعیت ورود
+          localStorage.setItem("userName", response.data.name); // ذخیره نام کاربر
+          setStep("phone"); // بازگشت به مرحله شماره تلفن
         } else {
-          toast.error("خطا در ثبت‌نام، لطفاً دوباره تلاش کنید.");
+          // نمایش پیام خطا
+          const errorMessage = response.data?.message || "خطا در ثبت‌نام، لطفاً دوباره تلاش کنید.";
+          toast.error(errorMessage);
+          console.error("Registration error:", response.data);
         }
       }
+
+
     } catch (error) {
       console.error("Error during API call:", error);
       toast.error("خطا در ارتباط با سرور، لطفاً دوباره تلاش کنید.");
     }
   };
 
-  // const checkServer = async () => {
-  //   try {
-  //     const response = await axios.get('http://127.0.0.1:8000/api/auth/login/');
-  //     console.log('Server is up:', response.data);
-  //   } catch (error) {
-  //     console.error('Error connecting to server:', error.message); // نمایش پیام خطا
-  //     console.error('Error details:', error); // نمایش جزئیات خطا
-  //   }
-  // };
-  // checkServer()
-
   const renderForm = () => {
     switch (step) {
-      case "login":
+      case "phone":
         return (
           <>
             <input
               type="tel"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               placeholder="شماره تلفن"
-              className={`text-right w-full p-2 mb-4 rounded ${
-                isDarkMode
-                  ? "bg-[#002400] text-[#F3F3E0]"
-                  : "bg-[#F3F3E0] text-[#002400]"
-              }`}
+              className={`text-right w-full p-2 mb-4 rounded ${isDarkMode
+                ? "bg-[#002400] text-[#F3F3E0]"
+                : "bg-[#F3F3E0] text-[#002400]"
+                }`}
             />
             <button
               type="submit"
-              className={`w-full p-2 rounded ${
-                isDarkMode
-                  ? "bg-[#7B904B] hover:bg-[#7B904B99]"
-                  : "bg-[#7B904B] hover:bg-[#7B904B99]"
-              } text-[#F3F3E0] transition-colors`}
+              className={`w-full p-2 rounded ${isDarkMode
+                ? "bg-[#7B904B] hover:bg-[#7B904B99]"
+                : "bg-[#7B904B] hover:bg-[#7B904B99]"
+                } text-[#F3F3E0] transition-colors`}
             >
-              ورود
-            </button>
-          </>
-        );
-      case "signup":
-        return (
-          <>
-            <input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="نام"
-              className={`w-full p-2 mb-4 rounded ${
-                isDarkMode
-                  ? "bg-[#002400] text-[#F3F3E0]"
-                  : "bg-[#F3F3E0] text-[#002400]"
-              }`}
-            />
-            <input
-              type="text"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              placeholder="کد تایید"
-              className={`w-full p-2 mb-4 rounded ${
-                isDarkMode
-                  ? "bg-[#002400] text-[#F3F3E0]"
-                  : "bg-[#F3F3E0] text-[#002400]"
-              }`}
-            />
-            <button
-              type="submit"
-              className={`w-full p-2 rounded ${
-                isDarkMode
-                  ? "bg-[#7B904B] hover:bg-[#7B904B99]"
-                  : "bg-[#7B904B] hover:bg-[#7B904B99]"
-              } text-[#F3F3E0] transition-colors`}
-            >
-              ثبت نام
+              ارسال کد تایید
             </button>
           </>
         );
@@ -133,37 +115,68 @@ function LoginFlow({ isDarkMode }) {
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value)}
               placeholder="کد تایید"
-              className={`w-full p-2 mb-4 rounded ${
-                isDarkMode
-                  ? "bg-[#002400] text-[#F3F3E0]"
-                  : "bg-[#F3F3E0] text-[#002400]"
-              }`}
+              className={`w-full p-2 mb-4 rounded ${isDarkMode
+                ? "bg-[#002400] text-[#F3F3E0]"
+                : "bg-[#F3F3E0] text-[#002400]"
+                }`}
             />
             <button
               type="submit"
-              className={`w-full p-2 rounded ${
-                isDarkMode
-                  ? "bg-[#7B904B] hover:bg-[#7B904B99]"
-                  : "bg-[#7B904B] hover:bg-[#7B904B99]"
-              } text-[#F3F3E0] transition-colors`}
+              className={`w-full p-2 rounded ${isDarkMode
+                ? "bg-[#7B904B] hover:bg-[#7B904B99]"
+                : "bg-[#7B904B] hover:bg-[#7B904B99]"
+                } text-[#F3F3E0] transition-colors`}
             >
               تایید
             </button>
           </>
         );
+      case "signup":
+        return (
+          <>
+            <input
+              type="tel"
+              value={signupPhone}
+              onChange={(e) => setSignupPhone(e.target.value)}
+              placeholder="شماره تلفن"
+              className={`w-full p-2 mb-4 rounded ${isDarkMode
+                ? "bg-[#002400] text-[#F3F3E0]"
+                : "bg-[#F3F3E0] text-[#002400]"}`
+              }
+            />
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="نام"
+              className={`w-full p-2 mb-4 rounded ${isDarkMode
+                ? "bg-[#002400] text-[#F3F3E0]"
+                : "bg-[#F3F3E0] text-[#002400]"}`
+              }
+            />
+            <button
+              type="submit"
+              className={`w-full p-2 rounded ${isDarkMode
+                ? "bg-[#7B904B] hover:bg-[#7B904B99]"
+                : "bg-[#7B904B] hover:bg-[#7B904B99]"} text-[#F3F3E0] transition-colors`}
+            >
+              ثبت نام
+            </button>
+          </>
+        );
+      default:
+        return null;
     }
   };
 
   return (
     <div
-      className={`transition-all min-h-screen flex items-center justify-center ${
-        isDarkMode ? "bg-[#0024009a]" : "bg-[#7b904b97]"
-      }`}
+      className={`transition-all min-h-screen flex items-center justify-center ${isDarkMode ? "bg-[#0024009a]" : "bg-[#7b904b97]"
+        }`}
     >
       <div
-        className={`w-full max-w-md p-8 rounded-lg shadow-lg ${
-          isDarkMode ? "bg-[#283618]" : "bg-[#606C38]"
-        }`}
+        className={`w-full max-w-md p-8 rounded-lg shadow-lg ${isDarkMode ? "bg-[#283618]" : "bg-[#606C38]"
+          }`}
       >
         <Link to="/">
           <picture>
@@ -175,11 +188,11 @@ function LoginFlow({ isDarkMode }) {
             />
           </picture>
           <h2 className="text-2xl font-bold mb-6 text-center">
-            {step === "login"
+            {step === "phone"
               ? "ورود"
-              : step === "signup"
-              ? "ثبت نام"
-              : "تایید کد"}
+              : step === "verify"
+                ? "تایید کد"
+                : "ثبت نام"}
           </h2>
         </Link>
         <form onSubmit={handleSubmit}>{renderForm()}</form>
@@ -189,3 +202,4 @@ function LoginFlow({ isDarkMode }) {
 }
 
 export default LoginFlow;
+

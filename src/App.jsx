@@ -4,7 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BsMoon } from "react-icons/bs";
 import { GiUbisoftSun } from "react-icons/gi";
-
+import AdDetail from './components/Categories/Ads/AdDetails';
 // Import all necessary components
 import AdminPanel from "./components/Admin/AdminPanel";
 import Dashboard from "./components/Admin/Dashboard";
@@ -14,7 +14,7 @@ import Settings from "./components/Admin/Settings";
 import Header from "./components/Header/Header";
 import AdForm from "./components/Form/AdForm";
 import Footer from "./components/Footer/Footer";
-import Home from "./components/home/Home";
+import Home from './components/home/Home';
 import CategoryAds from "./components/Categories/Ads/CategoryAds";
 import LoginFlow from "./components/Authentication/LoginFlow";
 import Favorites from "./components/Admin/Favorites";
@@ -56,6 +56,7 @@ function AppContent({ isDarkMode, toggleDarkMode, categories, updateFlag, onUpda
           <Route path="profile" element={<Profile />} />
         </Route>
         <Route path="/category-ads/:category_id" element={<CategoryAds categories={categories} isDarkMode={isDarkMode} />} />
+        <Route path="/ad-detail/:file_id" element={<AdDetail />} /> {/* اصلاح component به element */}
         <Route path="/login" element={<LoginFlow isDarkMode={isDarkMode} />} />
       </Routes>
       {location.pathname !== "/login" && <Footer isDarkMode={isDarkMode} />}
@@ -82,7 +83,7 @@ function App() {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const response = await fetch("http://192.168.10.213:8000/api/category/");
+      const response = await fetch("http://192.168.10.224:8000/api/category/");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }

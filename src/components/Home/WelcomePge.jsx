@@ -3,7 +3,7 @@ import DarkImg from "../../assets/img-dark.jpg";
 import LightImg from "../../assets/img-light.jpg";
 import { Link } from "react-router-dom";
 
-function WelcomePge({isDarkMode}) {
+function WelcomePge({ isDarkMode }) {
   const [visibleItems, setVisibleItems] = useState([]);
   const [imageOpacity, setImageOpacity] = useState(1);
   useEffect(() => {
@@ -24,6 +24,7 @@ function WelcomePge({isDarkMode}) {
   }, [isDarkMode]);
   return (
     <>
+    
       <div
         className="transition-opacity duration-500 w-full"
         style={{ opacity: imageOpacity }}
@@ -31,51 +32,48 @@ function WelcomePge({isDarkMode}) {
         <img
           src={isDarkMode ? DarkImg : LightImg}
           alt="Background"
-          className="w-full"
+          className="w-full min-h-40"
         />
       </div>
-      <div className="absolute xl:top-40 top-10 transform text-center">
+      <div className="absolute lg:top-40 top-5 text-sm transform text-center">
         <h1
-          className={`text-xl xl:text-3xl font-bold rounded p-2 mb-4 transition-all duration-500 ${
-            visibleItems.includes("h1")
+          className={`text-sm lg:text-3xl font-bold rounded p-2 mb-2 transition-all duration-500 ${visibleItems.includes("h1")
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-5"
-          } ${isDarkMode ? "bg-[#0024009a]" : "bg-[#7b904b97]"}`}
+            } ${isDarkMode ? "bg-[#0024009a]" : "bg-[#7b904b97]"}`}
         >
           خوش آمدید به وب‌سایت ما!
         </h1>
         <p
-          className={`text-sm xl:text-md p-2 mb-4 rounded transition-all duration-500 ${
-            visibleItems.includes("p")
+          className={`text-xs lg:text-md p-2 mb-2 lg:mb-4 rounded transition-all duration-500 ${visibleItems.includes("p")
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-5"
-          } ${isDarkMode ? "bg-[#0024009a]" : "bg-[#7b904b97]"}`}
+            } ${isDarkMode ? "bg-[#0024009a]" : "bg-[#7b904b97]"}`}
         >
           لطفاً از منوی کناری برای دسترسی به پنل ادمین استفاده کنید.
         </p>
         <div className="flex justify-between">
           <Link
             to="/admin"
-            className={`px-4 sm:text-sm py-2 my-2 bg-[#7B904B] transition-all text-white rounded hover:bg-[#002400] duration-500 ${
-              visibleItems.includes("adminLink")
+            className={`px-4 text-xs lg:text-md py-2 my-2 bg-[#7B904B] transition-all text-white rounded hover:bg-[#002400] duration-500 ${visibleItems.includes("adminLink")
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-5"
-            }`}
+              }`}
           >
             ورود به پنل ادمین
           </Link>
           <Link
             to="/form"
-            className={`px-4 sm:text-sm py-2 my-2 bg-[#7B904B] transition-all text-white rounded hover:bg-[#002400] duration-500 ${
-              visibleItems.includes("formLink")
+            className={`px-4 py-2 text-xs lg:text-md my-2 bg-[#7B904B] transition-all text-white rounded hover:bg-[#002400] duration-500 ${visibleItems.includes("formLink")
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-5"
-            }`}
+              }`}
           >
             افزودن آگهی جدید
           </Link>
         </div>
       </div>
+
     </>
   );
 }
